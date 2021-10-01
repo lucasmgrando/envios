@@ -1,0 +1,123 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  sam-app
+
+  Sample SAM Template for sam-app
+
+Globals:
+  Function:
+    Timeout: 3
+
+Resources:
+  ObtenerEnvioFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/
+      Handler: envios.api.get.lambda_handler
+      Runtime: python3.8
+      Events:
+        GetProducto:
+          Type: Api
+          Properties:
+            Path: /envios/{id}
+            Method: get
+  ObtenerEnviosFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/
+      Handler: envios.api.get_all.lambda_handler
+      Runtime: python3.8
+      Events:
+        GetProducto:
+          Type: Api
+          Properties:
+            Path: /envios
+            Method: get
+  CrearEnvioFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/
+      Handler: envios.api.post.lambda_handler
+      Runtime: python3.8
+      Events:
+        PostProducto:
+          Type: Api
+          Properties:
+            Path: /envios
+            Method: post
+  ActualizarEnvioFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/
+      Handler: envios.api.put.lambda_handler
+      Runtime: python3.8
+      Events:
+        PutProducto:
+          Type: Api
+          Properties:
+            Path: /envios/{id}
+            Method: put
+  EliminarEnvioFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/
+      Handler: envios.api.delete.lambda_handler
+      Runtime: python3.8
+      Events:
+        DeleteProducto:
+          Type: Api
+          Properties:
+            Path: /envios/{id}
+            Method: delete
+  EntregarFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/
+      Handler: envios.api.entregar.lambda_handler
+      Runtime: python3.8
+      Events:
+        PutProducto:
+          Type: Api
+          Properties:
+            Path: /envios/{id}/entregar
+            Method: put
+  PendientesFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/
+      Handler: envios.api.pendientes.lambda_handler
+      Runtime: python3.8
+      Events:
+        GetProducto:
+          Type: Api
+          Properties:
+            Path: /envios/pendientes
+            Method: get
+  DynamoDBTable:
+    Type: AWS::DynamoDB::Table
+    TableName: productos
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+        - AttributeName: fechaAlta
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+        - AttributeName: fechaAlta
+          KeyType: RANGE
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+Outputs:
+  ConversionApi:
+    Description: "Conversion"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/conversion/"
+  ConversionFunction:
+    Description: "Hello World Lambda Function ARN"
+    Value: !GetAtt HelloWorldFunction.Arn
+  ConversionFunctionIamRole:
+    Description: "Implicit IAM Role created for Hello World function"
+    Value: !GetAtt HelloWorldFunctionRole.Arn
